@@ -30,13 +30,12 @@
                 'scriptData'        : {'session_key': '{{session_key}}'},
                 'checkScript'       : '{% url fb_check %}',
                 'cancelImg'         : '{{ settings_var.URL_FILEBROWSER_MEDIA }}uploadify/cancel.png',
-                'auto'              : false,
+                'auto'              : true,
                 'folder'            : '{{ query.dir }}',
                 'multi'             : true,
                 'fileDesc'          : '{% for extension in settings_var.EXTENSIONS.items %}{% ifnotequal extension.0 'Folder' %}{% for item in extension.1 %}*{{ item|safe }};{% endfor %}{% endifnotequal %}{% endfor %}',
                 'fileExt'           : '{% for extension in settings_var.EXTENSIONS.items %}{% ifnotequal extension.0 'Folder' %}{% for item in extension.1 %}*{{ item|safe }};{% endfor %}{% endifnotequal %}{% endfor %}',
                 'sizeLimit'         : {{ settings_var.MAX_UPLOAD_SIZE }},
-                'scriptAccess'      : 'sameDomain',
                 'queueSizeLimit'    : 50,
                 'simUploadLimit'    : 1,
                 'width'             : 300,
@@ -44,22 +43,23 @@
                 'hideButton'        : false,
                 'wmode'             : 'transparent',
                 translations        : {
-                                      browseButton: '{% trans "BROWSE" %}',
+                                      browseButton: 'PARCOURIR',
                                       error: '{% trans "An Error occured" %}',
                                       completed: '{% trans "Completed" %}',
                                       replaceFile: '{% trans "Do you want to replace the file" %}',
                                       unitKb: '{% trans "KB" %}',
                                       unitMb: '{% trans "MB" %}'
-                }
+                },
+                'onAllComplete': function(event, data){ window.location = "{{ redirect_url }}" },
             });
-            $('input:submit').click(function(evt){
+       /*     $('input:submit').click(function(evt){
                 $('#id_file').uploadifyUpload();
                 return false;
             });
             $('a.cancel-link').click(function(evt){
                 $('#id_file').uploadifyClearQueue();
                 return false;
-            });
+            }); */
         });
     })(jQuery.noConflict());
     </script>
@@ -99,18 +99,19 @@
                 <div class="form-row">
                     <div class="column span-16 last"><p>
                         {% trans "The Name will be converted to lowercase. Spaces will be replaced with underscores." %}
+                        {{ query.dir }}
                     </p></div><br clear="all" />
                 </div>
             {% endif %}
         </fieldset>
 
-        <div class="submit-row">
+    {% comment %}    <div class="submit-row">
             <p class="deletelink-box">
               <a class="deletelink cancel-link" href="javascript://">{% trans "Clear Queue" %}</a>
             </p>
             <input class="default" type="submit" name="_save" value='{% trans "Upload" %}' />
         </div>
-
+{% endcomment %}
     </form>
 </div>
 {% endblock %}

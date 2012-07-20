@@ -218,6 +218,12 @@ def upload(request):
     
     # QUERY / PATH CHECK
     query = request.GET
+    
+    redirect_url = reverse('fb_browse')+'?'
+    for key,param in query.iteritems():
+        redirect_url += '%s=%s&' % (key,param)
+    redirect_url = redirect_url[:(len(redirect_url)-1)]
+
     path = get_path(query.get('dir', ''))
     if path is None:
         msg = _('The requested Folder does not exist.')
@@ -229,14 +235,15 @@ def upload(request):
     cookie_dict = parse_cookie(request.META.get('HTTP_COOKIE', ''))
     engine = __import__(settings.SESSION_ENGINE, {}, {}, [''])
     session_key = cookie_dict.get(settings.SESSION_COOKIE_NAME, None)
-    
+
     return render_to_response('filebrowser/upload.html', {
         'query': query,
         'title': _(u'Select files to upload'),
         'settings_var': get_settings_var(),
         'session_key': session_key,
         'breadcrumbs': get_breadcrumbs(query, path),
-        'breadcrumbs_title': _(u'Upload')
+        'breadcrumbs_title': _(u'Upload'),
+        'redirect_url':redirect_url
     }, context_instance=Context(request))
 upload = staff_member_required(never_cache(upload))
 
@@ -248,7 +255,6 @@ def _check_file(request):
     """
     
     from django.utils import simplejson
-    
     folder = request.POST.get('folder')
     fb_uploadurl_re = re.compile(r'^.*(%s)' % reverse("fb_upload"))
     folder = fb_uploadurl_re.sub('', folder)
@@ -274,7 +280,7 @@ def _upload_file(request):
     """
     Upload file to the server.
     """
-    
+    print "upload file"
     from django.core.files.move import file_move_safe
     
     if request.method == 'POST':
