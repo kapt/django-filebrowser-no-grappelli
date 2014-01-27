@@ -280,7 +280,6 @@ def _upload_file(request):
     """
     Upload file to the server.
     """
-    print "upload file"
     from django.core.files.move import file_move_safe
     
     if request.method == 'POST':
